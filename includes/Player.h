@@ -20,7 +20,7 @@ public:
 
     void displayInfo() const override;
 
-    void move(std::string moveString);
+    void move(std::string moveString, std::vector<std::vector<char>> gameMap);
 };
 
 #endif

@@ -1,6 +1,6 @@
 #include "../includes/Game.h"
 
-Game::Game(std::string GameName): gameMapObj(10, 10, "Game Map"), player("Detective"), npc1("Witness", "Public") 
+Game::Game(std::string GameName): gameMapObj(10, 10, "Game Map"), player("Detective"), npc1("Witness", "Public"), salaryMan0("Jim") 
 {
     std::cout << "Welcome to " << GameName << std::endl;
     gameMapObj.display();
@@ -16,6 +16,8 @@ Game::Game(std::string GameName): gameMapObj(10, 10, "Game Map"), player("Detect
     npc1.setMetric("Fear", 5.0f);
     npc1.setPosition(5, 2);
 
+    salaryMan0.setPosition(8,9);
+
     player.displayInfo();
     npc1.displayInfo();
 
@@ -25,6 +27,7 @@ Game::Game(std::string GameName): gameMapObj(10, 10, "Game Map"), player("Detect
     // Update map cells with player and NPC positions
     gameMapObj.setCell(player.getPosition()[0], player.getPosition()[1], 'P');
     gameMapObj.setCell(npc1.getPosition()[0], npc1.getPosition()[1], 'N');
+    gameMapObj.setCell(salaryMan0.getPosition()[0], salaryMan0.getPosition()[1], 'S');
 
     // Display the final game map
     gameMapObj.display();
@@ -42,7 +45,7 @@ void Game::updatePlayer()
 
     gameMapObj.setCell(player.getPosition()[0], player.getPosition()[1], '.');
 
-    player.move(input);
+    player.move(input, gameMapObj.getMap());
 
     gameMapObj.setCell(player.getPosition()[0], player.getPosition()[1], 'P');
 }

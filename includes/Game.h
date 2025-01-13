@@ -6,6 +6,7 @@
 #include "./Player.h"
 #include "./GameMap.h"
 #include <vector>
+#include "./Archetypes/SalaryWorker.h"
 
 class Game
 {
@@ -14,6 +15,7 @@ class Game
         Player player;
         //std::vector<NPC> NPC_Vector;
         NPC npc1;
+        SalaryWorker salaryMan0;
 
     public:
         Game(std::string GameName);

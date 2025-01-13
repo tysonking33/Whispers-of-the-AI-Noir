@@ -23,29 +23,26 @@ void Player::displayInfo() const
     }
 }
 
-void Player::move(std::string moveString)
+void Player::move(std::string moveString, std::vector<std::vector<char>> gameMap)
 {
-    if (moveString.compare("up") == 0)
+    std::vector<int> currentPos = getPosition();
+    if (moveString.compare("up") == 0 && (gameMap[currentPos[0]-1][currentPos[1]] == '.'))
     {
-        std::vector<int> currentPos = getPosition();
         currentPos[0] = std::max(0, currentPos[0]-1);
         setPosition(currentPos[0], currentPos[1]);
     }
-    else if (moveString.compare("down") == 0)
+    else if (moveString.compare("down") == 0 && (gameMap[currentPos[0]+1][currentPos[1]] == '.'))
     {
-        std::vector<int> currentPos = getPosition();
         currentPos[0] = std::min(9, currentPos[0]+1);
         setPosition(currentPos[0], currentPos[1]);
     }
-    else if (moveString.compare("left") == 0)
+    else if (moveString.compare("left") == 0 && (gameMap[currentPos[0]][currentPos[1]-1] == '.'))
     {
-        std::vector<int> currentPos = getPosition();
         currentPos[0] = std::max(0, currentPos[1]-1);
         setPosition(currentPos[0], currentPos[1]);
     }
-    else if (moveString.compare("right") == 0)
+    else if (moveString.compare("right") == 0 && (gameMap[currentPos[0]][currentPos[1]+1] == '.'))
     {
-        std::vector<int> currentPos = getPosition();
         currentPos[0] = std::min(9, currentPos[1]+1);
         setPosition(currentPos[0], currentPos[1]);
     }

@@ -26,6 +26,11 @@ public:
     char getCell(int x, int y) const;
 
     std::vector<int> GetMapDimensions();
+
+    std::vector<std::vector<char>> getMap()
+    {
+        return grid;
+    }
     
 };
 
