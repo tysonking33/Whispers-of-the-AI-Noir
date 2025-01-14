@@ -20,7 +20,7 @@ class Game
     public:
         Game(std::string GameName);
         void run();
-        void updatePlayer();
+        void updatePlayer(std::string input);
 
 };
 

@@ -33,16 +33,8 @@ Game::Game(std::string GameName): gameMapObj(10, 10, "Game Map"), player("Detect
     gameMapObj.display();
 }
 
-void Game::updatePlayer()
+void Game::updatePlayer(std::string input)
 {
-    std::string input;
-    std::cout << "Enter a command: ";
-    std::cin >> input;
-
-    for (char &c : input) {
-        c = std::tolower(c);
-    }
-
     gameMapObj.setCell(player.getPosition()[0], player.getPosition()[1], '.');
 
     player.move(input, gameMapObj.getMap());
@@ -55,11 +47,23 @@ void Game::run()
     bool GameRunBool = true;
     while (GameRunBool)
     {
-        updatePlayer();
+        std::string input;
+        std::cout << "Enter a command: ";
+        std::cin >> input;
+
+        for (char &c : input) {
+            c = std::tolower(c);
+        }
+        if (input.compare("exit") == 0)
+        {
+                std::cout << "\033[31mGame Over\033[0m" << std::endl;
+            exit(1);
+        }
+
+        updatePlayer(input);
 
 
         gameMapObj.display();
 
-        exit(1);
     }
 }
