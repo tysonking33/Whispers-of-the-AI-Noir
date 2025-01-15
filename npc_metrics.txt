@@ -1,0 +1,372 @@
+#ifndef NPC_H
+#define NPC_H
+
+#include "Entity.h"
+#include <algorithm>
+#include <iostream>
+#include <map>
+#include <string>
+#include <vector>
+
+struct Action
+{
+    std::string name;
+};
+
+class NPC : public Entity
+{
+protected:
+    std::map<std::string, float> metrics;                                               // e.g., Honesty, Trust, Fear, etc.
+    std::string role;                                                                   // e.g., Criminal, Police, Public
+    int health;                                                                         // overall health
+    std::map<std::string, std::pair<int, std::vector<Action>>> metricsThresholdActions; // map that holds the thresholds and corresponding actions
+    std::string current_action;
+    int action_count; //for iterations
+    int max_action_count; //max_number of iterations the npc will move 
+
+public:
+    NPC(const std::string &name, const std::string &role)
+        : Entity(name), role(role), health(100), current_action("random walking"), action_count(0), 
+    {
+        // Initialize metrics to default values
+        metrics["emotional intelligence"] = 0;
+        metrics["empathy"] = 0;
+        metrics["emotional regulation"] = 0;
+
+        metrics["physical strength and endurance"] = 0;
+        metrics["muscle mass"] = 0;
+        metrics["stamina"] = 0;
+        metrics["injuries"] = 0;
+
+        metrics["cognitive ability"] = 0;
+        metrics["problem-solving speed"] = 0;
+        metrics["memory"] = 0;
+        metrics["focus"] = 0;
+
+        metrics["morality"] = 0;
+        metrics["personal ethics"] = 0;
+        metrics["societal influence"] = 0;
+        metrics["personal conflict"] = 0;
+
+        metrics["stress response"] = 0;
+        metrics["stress level"] = 0;
+        metrics["coping mechanisms"] = 0;
+        metrics["fight or flight"] = 0;
+
+        metrics["social influence"] = 0;
+        metrics["charisma"] = 0;
+        metrics["persuasiveness"] = 0;
+        metrics["reputation"] = 0;
+
+        metrics["decision accuracy"] = 0;
+        metrics["available information"] = 0;
+        metrics["decision-making capability"] = 0;
+        metrics["urgency"] = 0;
+
+        metrics["risk-taking"] = 0;
+        metrics["impulsiveness"] = 0;
+        metrics["thrill-seeking"] = 0;
+        metrics["risk aversion"] = 0;
+
+        metrics["curiosity"] = 0;
+        metrics["intellectual curiosity"] = 0;
+        metrics["environmental novelty"] = 0;
+        metrics["motivational drive"] = 0;
+
+        metrics["environmental sensitivity"] = 0;
+        metrics["sensory acuity"] = 0;
+        metrics["environmental distraction"] = 0;
+
+        metrics["social group influence"] = 0;
+        metrics["group affiliation"] = 0;
+        metrics["conformity tendency"] = 0;
+        metrics["independence"] = 0;
+
+        metrics["trustworthiness"] = 0;
+        metrics["personal integrity"] = 0;
+        metrics["external incentives"] = 0;
+
+        metrics["physical coordination and agility"] = 0;
+        metrics["physical agility"] = 0;
+        metrics["muscular coordination"] = 0;
+        metrics["fatigue"] = 0;
+
+        metrics["conflict resolution"] = 0;
+        metrics["negotiation skill"] = 0;
+        metrics["aggression level"] = 0;
+        metrics["willingness to avoid conflict"] = 0;
+
+        metrics["energy and motivation"] = 0;
+        metrics["rest and recovery"] = 0;
+        metrics["personal goals or ambitions"] = 0;
+
+        metricsThresholdActions["Emotional Intelligence"] = {60, {{"Detect emotional cues"}, {"Empathize with others"}, {"De-escalate tension"}}};
+        metricsThresholdActions["Empathy"] = {50, {{"Offer emotional support"}, {"Comfort others"}, {"Understand motivations"}}};
+        metricsThresholdActions["Emotional Regulation"] = {40, {{"Stay calm under pressure"}, {"Avoid impulsive reactions"}}};
+        metricsThresholdActions["Physical Strength and Endurance"] = {60, {{"Engage in physical confrontation"}, {"Lift heavy objects"}, {"Pursue a suspect"}}};
+        metricsThresholdActions["Cognitive Ability"] = {60, {{"Solve complex problems"}, {"Analyze evidence"}, {"Find logical connections"}}};
+        metricsThresholdActions["Problem-Solving Speed"] = {70, {{"Quickly analyze crime scenes"}, {"Deduce suspects"}, {"Solve puzzles"}}};
+        metricsThresholdActions["Memory"] = {50, {{"Recall past events"}, {"Remember important details about suspects"}, {"Track timelines"}}};
+        metricsThresholdActions["Focus"] = {55, {{"Maintain concentration on tasks"}, {"Stay focused during stressful moments"}, {"Avoid distractions"}}};
+        metricsThresholdActions["Morality"] = {50, {{"Act with integrity"}, {"Uphold ethical standards"}, {"Resist corruption"}}};
+        metricsThresholdActions["Social Influence"] = {70, {{"Convince others"}, {"Lead discussions"}, {"Change opinions"}}};
+        metricsThresholdActions["Charisma"] = {65, {{"Charm others"}, {"Gain trust"}, {"Build rapport"}}};
+        metricsThresholdActions["Decision-Making Capability"] = {60, {{"Make critical decisions in high-pressure situations"}, {"Weigh pros and cons"}, {"Choose the best course of action"}}};
+        metricsThresholdActions["Risk-Taking"] = {70, {{"Take dangerous actions"}, {"Confront criminals"}, {"Enter risky locations"}}};
+        metricsThresholdActions["Curiosity"] = {50, {{"Explore new areas"}, {"Investigate unusual details"}, {"Ask probing questions"}}};
+        metricsThresholdActions["Environmental Sensitivity"] = {60, {{"Detect subtle environmental cues"}, {"Notice changes in surroundings"}, {"Identify hidden clues"}}};
+        metricsThresholdActions["Physical Agility"] = {65, {{"Dodge attacks"}, {"Perform parkour maneuvers"}, {"Evasive movements"}}};
+        metricsThresholdActions["Conflict Resolution"] = {60, {{"Calm down hostile NPCs"}, {"Negotiate peaceful outcomes"}, {"Defuse dangerous situations"}}};
+        metricsThresholdActions["Energy and Motivation"] = {55, {{"Maintain effort in long tasks"}, {"Work through exhaustion"}, {"Stay motivated"}}};
+        metricsThresholdActions["Stress Response"] = {50, {{"Remain calm under stress"}, {"Avoid panic"}, {"Think clearly in emergencies"}}};
+        metricsThresholdActions["Trustworthiness"] = {70, {{"Build trust"}, {"Avoid deception"}, {"Act as a reliable source of information"}}};
+        metricsThresholdActions["Negotiation Skill"] = {65, {{"Negotiate terms"}, {"Barter"}, {"Resolve disputes through compromise"}}};
+        metricsThresholdActions["Aggression Level"] = {40, {{"Respond violently or aggressively"}, {"Intimidate others"}, {"Engage in hostile confrontations"}}};
+        metricsThresholdActions["Fatigue"] = {50, {{"Perform demanding tasks despite exhaustion"}, {"Push through fatigue"}, {"Rest and recover"}}};
+        metricsThresholdActions["Personal Goals or Ambitions"] = {60, {{"Take actions aligned with personal interests"}, {"Pursue long-term goals"}, {"Act on self-motivated tasks"}}};
+        metricsThresholdActions["Impulsiveness"] = {45, {{"Take spontaneous actions"}, {"Rush into dangerous situations"}, {"React without thinking"}}};
+        metricsThresholdActions["Social Group Influence"] = {50, {{"Follow group norms"}, {"Be influenced by group decisions"}, {"Conform to social pressure"}}};
+        metricsThresholdActions["Independence"] = {55, {{"Make decisions independently"}, {"Take individual actions"}, {"Act outside of group influence"}}};
+    }
+    void setMetric(const std::string &metricName, int value)
+    {
+        if (metrics.find(metricName) != metrics.end())
+        {
+            metrics[metricName] = std::clamp(value, 0, 100);
+        }
+    }
+
+    void findMostLikelyAction()
+    {
+        // Recalculate all metrics
+        calculateAllMetrics();
+
+        // Find the top 3 highest metrics that are above their threshold
+        std::vector<std::pair<std::string, std::pair<float, std::vector<std::string>>>> filteredMetrics;
+
+        // Filter metrics based on thresholds
+        for (const auto &currentMetric : metrics)
+        {
+            // Compare current value to the threshold
+            if (currentMetric.second > metricsThresholdActions[currentMetric.first].first)
+            {
+                filteredMetrics.push_back({currentMetric.first, {currentMetric.second, metricsThresholdActions[currentMetric.first].second}});
+            }
+        }
+
+        // Sort filtered metrics in descending order by value
+        std::sort(filteredMetrics.begin(), filteredMetrics.end(),
+                  [](const auto &a, const auto &b)
+                  {
+                      return a.second.first > b.second.first; // Descending order
+                  });
+
+        // Save the top 3 metrics into a new vector
+        std::vector<std::pair<std::string, std::pair<float, std::vector<std::string>>>> Top3Metrics;
+        for (int i = 0; i < std::min(3, static_cast<int>(filteredMetrics.size())); i++)
+        {
+            Top3Metrics.push_back(filteredMetrics[i]);
+        }
+
+        // Output the top 3 metrics
+        std::cout << "Top 3 metrics saved in the map:\n";
+        for (const auto &topMetric : Top3Metrics)
+        {
+            std::cout << "Metric: " << topMetric.first << ", Value: " << topMetric.second.first;
+            for (const auto &action : topMetric.second.second)
+            {
+                std::cout << ", " << action;
+            }
+            std::cout << "\n";
+        }
+
+        // Pick a random action out of the top 3
+        if (!Top3Metrics.empty())
+        {
+            int number = rand() % Top3Metrics.size();
+            const auto &finalAction = Top3Metrics[number];
+
+            std::cout << "Final action:\n";
+            std::cout << "Metric: " << finalAction.first << ", Value: " << finalAction.second.first;
+            for (const auto &action : finalAction.second.second)
+            {
+                std::cout << ", " << action;
+            }
+            std::cout << "\n";
+        }
+        else
+        {
+            std::cout << "No metrics met the threshold.\n";
+        }
+    }
+
+    void calculateHealth()
+    {
+        health = ((metrics["physical strength and endurance"] + metrics["muscle mass"] + metrics["stamina"]) - (metrics["injuries"] * 2)) / 4;
+    }
+
+    void calculateAllMetrics()
+    {
+        int value;
+        value = (metrics["self-awareness"] * metrics["empathy"]) / (1 + metrics["emotional regulation"]);
+        metrics["emotional intelligence"] = std::clamp(value, 0, 100);
+
+        value = (metrics["muscle mass"] * metrics["stamina"]) / (1 + metrics["injuries"]);
+        metrics["physical strength and endurance"] = std::clamp(value, 0, 100);
+
+        value = (metrics["problem-solving speed"] * metrics["memory"]) / (1 + metrics["focus"]);
+        metrics["cognitive ability"] = std::clamp(value, 0, 100);
+
+        value = (metrics["personal ethics"] + metrics["societal influence"]) * metrics["personal conflict"];
+        metrics["morality"] = std::clamp(value, 0, 100);
+
+        value = (metrics["stress level"] / (1 + exp(-metrics["coping mechanisms"]))) + metrics["fight or flight"];
+        metrics["stress response"] = std::clamp(value, 0, 100);
+
+        value = metrics["charisma"] * metrics["persuasiveness"] + metrics["reputation"];
+        metrics["social influence"] = std::clamp(value, 0, 100);
+
+        value = (metrics["available information"] * metrics["decision-making capability"]) / (1 + exp(metrics["urgency"]));
+        metrics["decision accuracy"] = std::clamp(value, 0, 100);
+
+        value = (metrics["impulsiveness"] * metrics["thrill-seeking"]) / (1 + metrics["risk aversion"]);
+        metrics["risk-taking"] = std::clamp(value, 0, 100);
+
+        value = (metrics["intellectual curiosity"] + metrics["environmental novelty"]) * (1 + metrics["motivational drive"]);
+        metrics["curiosity"] = std::clamp(value, 0, 100);
+
+        // Calculate environmental sensitivity
+        value = (20 * log(metrics["sensory acuity"] + 1)) / (metrics["environmental distraction"] + 1);
+        metrics["environmental sensitivity"] = std::clamp(value, 0, 100);
+
+        // Calculate social group influence
+        value = (metrics["group affiliation"] * metrics["conformity tendency"]) / (1 + metrics["independence"]);
+        metrics["social group influence"] = std::clamp(value, 0, 100);
+
+        // Calculate trustworthiness
+        value = (metrics["personal integrity"] + metrics["reputation"]) / (1 + metrics["external incentives"]);
+        metrics["trustworthiness"] = std::clamp(value, 0, 100);
+
+        // Calculate physical coordination and agility
+        value = (metrics["physical agility"] * metrics["muscular coordination"]) / (1 + metrics["fatigue"]);
+        metrics["physical coordination and agility"] = std::clamp(value, 0, 100);
+
+        // Calculate conflict resolution
+        value = (metrics["negotiation skill"] + metrics["aggression level"]) / (metrics["willingness to avoid conflict"] + 1);
+        metrics["conflict resolution"] = std::clamp(value, 0, 100);
+
+        // Calculate energy and motivation
+        value = (metrics["rest and recovery"] * metrics["personal goals or ambitions"]) / (metrics["fatigue"] + 1);
+        metrics["energy and motivation"] = std::clamp(value, 0, 100);
+    }
+
+    void calculateMetric(const std::string &metricName)
+    {
+        if (metricName.compare("emotional intelligence"))
+        {
+            int value = (metrics["self-awareness"] * metrics["empathy"]) / (1 + metrics["emotional regulation"]);
+            metrics[metricName] = std::clamp(value, 0, 100);
+        }
+        else if (metricName.compare("physical strength and endurance"))
+        {
+            int value = (metrics["muscle mass"] * metrics["stamina"]) / (1 + metrics["injuries"]);
+            metrics[metricName] = std::clamp(value, 0, 100);
+        }
+        else if (metricName.compare("cognitive ability"))
+        {
+            int value = (metrics["problem-solving speed"] * metrics["memory"]) / (1 + metrics["focus"]);
+            metrics[metricName] = std::clamp(value, 0, 100);
+        }
+        else if (metricName.compare("morality"))
+        {
+            int value = (metrics["personal ethics"] + metrics["societal influence"]) * metrics["personal conflict"];
+            metrics[metricName] = std::clamp(value, 0, 100);
+        }
+        else if (metricName.compare("stress response"))
+        {
+            int value = (metrics["stress level"] / (1 + exp(-metrics["coping mechanisms"]))) + metrics["fight or flight"];
+            metrics[metricName] = std::clamp(value, 0, 100);
+        }
+        else if (metricName.compare("social influence"))
+        {
+            int value = metrics["charisma"] * metrics["persuasiveness"] + metrics["reputation"];
+            metrics[metricName] = std::clamp(value, 0, 100);
+        }
+        else if (metricName.compare("decision accuracy"))
+        {
+            int value = (metrics["available information"] * metrics["decision-making capability"]) / (1 + exp(metrics["urgency"]));
+            metrics[metricName] = std::clamp(value, 0, 100);
+        }
+        else if (metricName.compare("risk-taking"))
+        {
+            int value = (metrics["impulsiveness"] * metrics["thrill-seeking"]) / (1 + metrics["risk aversion"]);
+            metrics[metricName] = std::clamp(value, 0, 100);
+        }
+        else if (metricName.compare("curiosity"))
+        {
+            int value = (metrics["intellectual curiosity"] + metrics["environmental novelty"]) * (1 + metrics["motivational drive"]);
+            metrics[metricName] = std::clamp(value, 0, 100);
+        }
+        else if (metricName.compare("environmental sensitivity") == 0)
+        {
+            // Calculate environmental sensitivity
+            int value = (20 * log(metrics["sensory acuity"] + 1)) / (metrics["environmental distraction"] + 1);
+            metrics[metricName] = std::clamp(value, 0, 100);
+        }
+        else if (metricName.compare("social group influence") == 0)
+        {
+            // Calculate social group influence
+            int value = (metrics["group affiliation"] * metrics["conformity tendency"]) / (1 + metrics["independence"]);
+            metrics[metricName] = std::clamp(value, 0, 100);
+        }
+        else if (metricName.compare("trustworthiness") == 0)
+        {
+            // Calculate trustworthiness
+            int value = (metrics["personal integrity"] + metrics["reputation"]) / (1 + metrics["external incentives"]);
+            metrics[metricName] = std::clamp(value, 0, 100);
+        }
+        else if (metricName.compare("physical coordination and agility") == 0)
+        {
+            // Calculate physical coordination and agility
+            int value = (metrics["physical agility"] * metrics["muscular coordination"]) / (1 + metrics["fatigue"]);
+            metrics[metricName] = std::clamp(value, 0, 100);
+        }
+        else if (metricName.compare("conflict resolution") == 0)
+        {
+            // Calculate conflict resolution
+            int value = (metrics["negotiation skill"] + metrics["aggression level"]) / (metrics["willingness to avoid conflict"] + 1);
+            metrics[metricName] = std::clamp(value, 0, 100);
+        }
+        else if (metricName.compare("energy and motivation") == 0)
+        {
+            // Calculate energy and motivation
+            int value = (metrics["rest and recovery"] * metrics["personal goals or ambitions"]) / (metrics["fatigue"] + 1);
+            metrics[metricName] = std::clamp(value, 0, 100);
+        }
+    }
+
+    int randIntRange(int min, int max)
+    {
+        return (rand() % (max - min + 1)) + min;
+    }
+
+    float getMetric(const std::string &metricName) const
+    {
+        if (metrics.find(metricName) != metrics.end())
+        {
+            return metrics.at(metricName);
+        }
+        return 0.0f;
+    }
+
+    void displayInfo() const override
+    {
+        std::cout << "NPC: " << name << "\nRole: " << role << "\nMetrics:\n";
+        for (const auto &[metricName, value] : metrics)
+        {
+            std::cout << "  " << metricName << ": " << value << "\n";
+        }
+    }
+};
+
+#endif

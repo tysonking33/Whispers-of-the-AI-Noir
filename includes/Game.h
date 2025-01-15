@@ -21,6 +21,7 @@ class Game
         Game(std::string GameName);
         void run();
         void updatePlayer(std::string input);
+        void updateNPC();
 
 };
 

@@ -1,6 +1,6 @@
 #include "../includes/Game.h"
 
-Game::Game(std::string GameName): gameMapObj(10, 10, "Game Map"), player("Detective"), npc1("Witness", "Public"), salaryMan0("Jim") 
+Game::Game(std::string GameName): gameMapObj(10, 10, "Game Map"), player("Detective", gameMapObj.getMap()), npc1("Witness", "Public", gameMapObj.getMap(), 5,2), salaryMan0("Jim", gameMapObj.getMap(), 3,3) 
 {
     std::cout << "Welcome to " << GameName << std::endl;
     gameMapObj.display();
@@ -11,9 +11,6 @@ Game::Game(std::string GameName): gameMapObj(10, 10, "Game Map"), player("Detect
     player.setPosition(9, 9);
 
     // Create NPC and set their properties
-    npc1.setMetric("Honesty", 15.0f);
-    npc1.setMetric("Trust", 12.0f);
-    npc1.setMetric("Fear", 5.0f);
     npc1.setPosition(5, 2);
 
     salaryMan0.setPosition(8,9);
@@ -27,7 +24,6 @@ Game::Game(std::string GameName): gameMapObj(10, 10, "Game Map"), player("Detect
     // Update map cells with player and NPC positions
     gameMapObj.setCell(player.getPosition()[0], player.getPosition()[1], 'P');
     gameMapObj.setCell(npc1.getPosition()[0], npc1.getPosition()[1], 'N');
-    gameMapObj.setCell(salaryMan0.getPosition()[0], salaryMan0.getPosition()[1], 'S');
 
     // Display the final game map
     gameMapObj.display();
@@ -36,11 +32,17 @@ Game::Game(std::string GameName): gameMapObj(10, 10, "Game Map"), player("Detect
 void Game::updatePlayer(std::string input)
 {
     gameMapObj.setCell(player.getPosition()[0], player.getPosition()[1], '.');
-
-    player.move(input, gameMapObj.getMap());
-
+    player.move(input);
     gameMapObj.setCell(player.getPosition()[0], player.getPosition()[1], 'P');
 }
+
+void Game::updateNPC()
+{
+    gameMapObj.setCell(npc1.getPosition()[0], npc1.getPosition()[1], 'X');
+    npc1.doCurrentAction();
+    gameMapObj.setCell(npc1.getPosition()[0], npc1.getPosition()[1], 'N');
+}
+
 
 void Game::run()
 {
@@ -61,7 +63,7 @@ void Game::run()
         }
 
         updatePlayer(input);
-
+        updateNPC();
 
         gameMapObj.display();
 

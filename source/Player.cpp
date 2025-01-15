@@ -1,6 +1,6 @@
 #include "../includes/Player.h"
 
-Player::Player(const std::string &name) : Entity(name), reputation(10.0f) {}
+Player::Player(const std::string &name, std::vector<std::vector<char>> newGameMap) : Entity(name), reputation(10.0f), gameMap(newGameMap) {}
 
 void Player::addItem(const std::string &item)
 {
@@ -23,31 +23,32 @@ void Player::displayInfo() const
     }
 }
 
-void Player::move(std::string moveString, std::vector<std::vector<char>> gameMap)
+void Player::updateMap(std::vector<std::vector<char>> newGameMap)
 {
+    gameMap = newGameMap;
+}
+
+void Player::move(std::string moveString) {
     std::vector<int> currentPos = getPosition();
-    if (moveString.compare("up") == 0 && 
-        ((gameMap[currentPos[0]-1][currentPos[1]] == '.') || (gameMap[currentPos[0]-1][currentPos[1]] == 'D')))
-    {
-        currentPos[0] = std::max(0, currentPos[0]-1);
-        setPosition(currentPos[0], currentPos[1]);
+    int mapHeight = gameMap.size();
+    int mapWidth = gameMap[0].size();
+
+    int newX = currentPos[0];
+    int newY = currentPos[1];
+
+    if (moveString == "up" && currentPos[0] > 0) {
+        newX = currentPos[0] - 1;
+    } else if (moveString == "down" && currentPos[0] < mapHeight - 1) {
+        newX = currentPos[0] + 1;
+    } else if (moveString == "left" && currentPos[1] > 0) {
+        newY = currentPos[1] - 1;
+    } else if (moveString == "right" && currentPos[1] < mapWidth - 1) {
+        newY = currentPos[1] + 1;
     }
-    else if (moveString.compare("down") == 0 && 
-        ((gameMap[currentPos[0]+1][currentPos[1]] == '.') || (gameMap[currentPos[0]+1][currentPos[1]] == 'D')))
-    {
-        currentPos[0] = std::min(9, currentPos[0]+1);
-        setPosition(currentPos[0], currentPos[1]);
-    }
-    else if (moveString.compare("left") == 0 
-        && ((gameMap[currentPos[0]][currentPos[1]-1] == '.') || (gameMap[currentPos[0]][currentPos[1]-1] == 'D')))
-    {
-        currentPos[1] = std::max(0, currentPos[1]-1);
-        setPosition(currentPos[0], currentPos[1]);
-    }
-    else if (moveString.compare("right") == 0 
-        && ((gameMap[currentPos[0]][currentPos[1]+1] == '.') || (gameMap[currentPos[0]][currentPos[1]+1] == 'D')))
-    {
-        currentPos[1] = std::min(9, currentPos[1]+1);
-        setPosition(currentPos[0], currentPos[1]);
+
+    // Check if the new position is valid
+    if (gameMap[newX][newY] == '.' || gameMap[newX][newY] == 'D') {
+        setPosition(newX, newY);
     }
 }
+

@@ -5,8 +5,8 @@
 
 class SalaryWorker : public NPC {
 public:
-    SalaryWorker(const std::string& name) 
-        : NPC(name, "Salary Worker") {
+    SalaryWorker(const std::string& name, std::vector<std::vector<char>> newMap, int newX, int newY) 
+        : NPC(name, "Salary Worker", newMap, newX, newY) {
         metrics["emotional intelligence"] = 15;
         metrics["empathy"] = 12;
         metrics["emotional regulation"] = 14;

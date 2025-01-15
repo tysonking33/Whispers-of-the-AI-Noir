@@ -8,9 +8,10 @@ class Player : public Entity {
 private:
     std::vector<std::string> inventory;
     float reputation; // Affects interactions with NPCs
+    std::vector<std::vector<char>> gameMap;
 
 public:
-    Player(const std::string& name);
+    Player(const std::string& name, std::vector<std::vector<char>> newGameMap);
 
     void addItem(const std::string& item);
 
@@ -20,7 +21,8 @@ public:
 
     void displayInfo() const override;
 
-    void move(std::string moveString, std::vector<std::vector<char>> gameMap);
+    void move(std::string moveString);
+    void updateMap(std::vector<std::vector<char>> newGameMap);
 };
 
 #endif

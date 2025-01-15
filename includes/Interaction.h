@@ -10,8 +10,11 @@ public:
         std::cout << "Interaction between Player: " << player.getName() 
                   << " and NPC: " << npc.getName() << "\n";
         // Example interaction logic
-        float trust = npc.getMetric("Trust");
-        float honesty = npc.getMetric("Honesty");
+        //float trust = npc.getMetric("Trust");
+        //float honesty = npc.getMetric("Honesty");
+
+        float trust = 10;
+        float honesty = 10;
 
         if (trust > 10 && honesty > 10) {
             std::cout << npc.getName() << ": I trust you. Here is some valuable information.\n";
