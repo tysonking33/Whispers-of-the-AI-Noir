@@ -7,6 +7,7 @@
 #include "./GameMap.h"
 #include <vector>
 #include "./Archetypes/SalaryWorker.h"
+#include "./Calendar.h"
 
 class Game
 {
@@ -16,12 +17,19 @@ class Game
         //std::vector<NPC> NPC_Vector;
         NPC npc1;
         SalaryWorker salaryMan0;
+        Calendar calendar;
+
+
 
     public:
         Game(std::string GameName);
         void run();
         void updatePlayer(std::string input);
         void updateNPC();
+        void initTimeOfDay();
+        void printTimeOfDay();
+        void UpdateTimeofDay();
+
 
 };
 

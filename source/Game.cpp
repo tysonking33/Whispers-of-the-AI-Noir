@@ -1,6 +1,6 @@
 #include "../includes/Game.h"
 
-Game::Game(std::string GameName): gameMapObj(10, 10, "Game Map"), player("Detective", gameMapObj.getMap()), npc1("Witness", "Public", gameMapObj.getMap(), 5,2), salaryMan0("Jim", gameMapObj.getMap(), 3,3) 
+Game::Game(std::string GameName): gameMapObj(10, 10, "Game Map"), player("Detective", gameMapObj.getMap()), npc1("Witness", "Public", gameMapObj.getMap(), 5,2), salaryMan0("Jim", gameMapObj.getMap(), 3,3), calendar()
 {
     std::cout << "Welcome to " << GameName << std::endl;
     gameMapObj.display();
@@ -29,6 +29,7 @@ Game::Game(std::string GameName): gameMapObj(10, 10, "Game Map"), player("Detect
     gameMapObj.display();
 }
 
+
 void Game::updatePlayer(std::string input)
 {
     gameMapObj.setCell(player.getPosition()[0], player.getPosition()[1], '.');
@@ -42,7 +43,6 @@ void Game::updateNPC()
     npc1.doCurrentAction();
     gameMapObj.setCell(npc1.getPosition()[0], npc1.getPosition()[1], 'N');
 }
-
 
 void Game::run()
 {
@@ -64,6 +64,8 @@ void Game::run()
 
         updatePlayer(input);
         updateNPC();
+
+        calendar.UpdateTimeofDay();
 
         gameMapObj.display();
 

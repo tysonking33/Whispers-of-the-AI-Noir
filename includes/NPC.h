@@ -63,28 +63,15 @@ public:
 
     void doCurrentAction()
     {
-        std::cout << "Current action: " <<  current_action << std::endl;
-        if (stillDoingCurrentAction() == true)
-        {
-            std::cout << "still doing\n";
-        }
-        else
-        {
-            std::cout << "finding new action\n";
-        }
         if (current_action.compare("random walking") && stillDoingCurrentAction())
         {
-            std::cout << "randomWalking();\n";
             randomWalking();
         }
         else if (current_action.compare("idle standing") && stillDoingCurrentAction())
         {
-            std::cout << "idle standing\n";
             action_count++;       
         }
         else {
-            std::cout << "find new action\n";
-
             findNewAction();
         }
     }
@@ -92,7 +79,6 @@ public:
     void findNewAction()
     {
         action_count = 0;
-        std::cout << "finding new action\n";
         if (randIntRange(0, 2) == 1)
         {
             current_action = "idle standing";
@@ -107,7 +93,6 @@ public:
 
     void randomWalking()
     {
-        std::cout << "randomWalking()\n";
         // Define possible movements
         std::vector<std::vector<int>> possibleMovements = {
             {-1, -1}, {0, -1}, {1, -1}, {-1, 0}, {1, 0}, {-1, 1}, {0, 1}, {1, 1}};
@@ -144,7 +129,6 @@ public:
             if (correspondingLetter == '.' || correspondingLetter == 'D')
             {
                 setPos(newX, newY);
-                std::cout << "newX: " << newX << ", newY: " << newY << std::endl;
                 action_count++;
                 return; // Exit the function after finding a valid movement
             }
