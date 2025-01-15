@@ -1,6 +1,6 @@
 #include "../includes/Game.h"
 
-Game::Game(std::string GameName): gameMapObj(10, 10, "Game Map"), player("Detective", gameMapObj.getMap()), npc1("Witness", "Public", gameMapObj.getMap(), 5,2), salaryMan0("Jim", gameMapObj.getMap(), 3,3), calendar()
+Game::Game(std::string GameName): gameMapObj(10, 10, "Game Map"), player("Detective", gameMapObj.getMap(), 9, 9), npc1("Witness", "Public", gameMapObj.getMap(), 5,2), salaryMan0("Jim", gameMapObj.getMap(), 3,3), calendar()
 {
     std::cout << "Welcome to " << GameName << std::endl;
     gameMapObj.display();
@@ -8,12 +8,11 @@ Game::Game(std::string GameName): gameMapObj(10, 10, "Game Map"), player("Detect
     // Pass the required argument (player name) to the Player constructor
     player.addItem("Notebook");
     player.addItem("Fingerprint Kit");
-    player.setPosition(9, 9);
 
     // Create NPC and set their properties
-    npc1.setPosition(5, 2);
+    //npc1.setPosition(5, 2);
 
-    salaryMan0.setPosition(8,9);
+    //salaryMan0.setPosition(8,9);
 
     player.displayInfo();
     npc1.displayInfo();

@@ -11,7 +11,7 @@ private:
     std::vector<std::vector<char>> gameMap;
 
 public:
-    Player(const std::string& name, std::vector<std::vector<char>> newGameMap);
+    Player(const std::string& name, std::vector<std::vector<char>> newGameMap, int newX, int newY);
 
     void addItem(const std::string& item);
 

@@ -1,6 +1,8 @@
 #include "../includes/Player.h"
 
-Player::Player(const std::string &name, std::vector<std::vector<char>> newGameMap) : Entity(name), reputation(10.0f), gameMap(newGameMap) {}
+Player::Player(const std::string &name, std::vector<std::vector<char>> newGameMap, int newX, int newY) : Entity(name, newGameMap), reputation(10.0f), gameMap(newGameMap) {
+    setPosition(newX, newY);
+}
 
 void Player::addItem(const std::string &item)
 {
@@ -21,11 +23,6 @@ void Player::displayInfo() const
     {
         std::cout << "  " << item << "\n";
     }
-}
-
-void Player::updateMap(std::vector<std::vector<char>> newGameMap)
-{
-    gameMap = newGameMap;
 }
 
 void Player::move(std::string moveString) {

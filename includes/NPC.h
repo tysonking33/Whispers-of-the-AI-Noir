@@ -10,6 +10,7 @@
 #include <cstdlib> // For rand()
 #include <ctime>   // For seeding rand()
 
+
 struct Action
 {
     std::string name;
@@ -25,35 +26,81 @@ protected:
     std::string current_action;
     int action_count;     // for iterations
     int max_action_count; // max_number of iterations the npc will move
-    int xPos, yPos;
-    std::vector<std::vector<char>> map;
 
 public:
     NPC(const std::string &name, const std::string &role, std::vector<std::vector<char>> newMap, int newX, int newY)
-        : Entity(name), role(role), health(100), current_action("random walking"), action_count(0), max_action_count(3), xPos(newX), yPos(newY),map(newMap)
+        : Entity(name, newMap), role(role), health(100), current_action("random walking"), action_count(0), max_action_count(3)
     {
+        setPosition(newX, newY);
         if (randIntRange(0, 2) == 1)
         {
             current_action = "idle standing";
             max_action_count = 3;
         }
+        initMetrics();
     }
 
-    void setPos(int newX, int newY)
+    void initMetrics()
     {
-        xPos = newX;
-        yPos = newY;
+        metrics["suspicion"] = 0;
+        metrics["base suspicion"] = 0;
+        metrics["recent events"] = 0;
+        metrics["crime exposure"] = 0;
+        
+        metrics["morality"] = 0;
+        metrics["base morality"] = 0;
+        metrics["crime participation"] = 0;
+
+        metrics["attention"] = 0;
+        metrics["current activity"] = 0;
+        metrics["environmental awareness"] = 0;
+
+        metrics["stress"] = 0;
+        metrics["base stress"] = 0;
+        metrics["events encountered"] = 0;
+
+        metrics["social interaction"] = 0;
+        metrics["base personality"] = 0;
+        metrics["relationship with player"] = 0;
     }
 
-    void setMap(std::vector<std::vector<char>> newMap)
+    void setSingleMetric(std::string currentMetric, int newValue)
     {
-        map = newMap;
+        if (currentMetric.compare("base suspicion") || currentMetric.compare("recent events") ||currentMetric.compare("crime exposure"))
+        {
+            metrics["currentMetric"] = std::clamp(newValue, 0, 100);
+            metrics["suspicion"] = metrics["base suspicion"] + metrics["recent events"] * metrics["crime exposure"];
+        }
+        else if (currentMetric.compare("base morality") || currentMetric.compare("crime participation"))
+        {
+            metrics["currentMetric"] = std::clamp(newValue, 0, 100);
+            metrics["morality"] = metrics["base morality"] - metrics["crime participation"];
+        }
+        else if (currentMetric.compare("current activity") || currentMetric.compare("environmental awareness"))
+        {
+            metrics["currentMetric"] = std::clamp(newValue, 0, 100);
+            metrics["attention"] = metrics["current activity"] + metrics["environmental awareness"];
+        }
+        else if (currentMetric.compare("base stress") || currentMetric.compare("events encountered"))
+        {
+            metrics["currentMetric"] = std::clamp(newValue, 0, 100);
+            metrics["stress"] = metrics["base stress"] + metrics["events encountered"];
+        }
+        else if (currentMetric.compare("base personality") || currentMetric.compare("relationship with player"))
+        {
+
+            metrics["currentMetric"] = std::clamp(newValue, 0, 100);
+            metrics["social interaction"] = metrics["base personality"] + metrics["relationship with player"] - metrics["stress"];
+        }
     }
 
-    std::vector<int> getPosition()
+    void calculateAllMetrics()
     {
-        std::vector<int> positionVector = {xPos, yPos};
-        return positionVector;
+        metrics["suspicion"] = metrics["base suspicion"] + metrics["recent events"] * metrics["crime exposure"];
+        metrics["morality"] = metrics["base morality"] - metrics["crime participation"];
+        metrics["attention"] = metrics["current activity"] + metrics["environmental awareness"];
+        metrics["stress"] = metrics["base stress"] + metrics["events encountered"];
+        metrics["social interaction"] = metrics["base personality"] + metrics["relationship with player"] - metrics["stress"];
     }
 
     bool stillDoingCurrentAction()
@@ -113,22 +160,22 @@ public:
             possibleMovements.erase(possibleMovements.begin() + randomIndex);
 
             // Calculate the new position
-            int newX = xPos + selectedVector[0];
-            int newY = yPos + selectedVector[1];
+            int newX = position[0] + selectedVector[0];
+            int newY = position[1] + selectedVector[1];
 
             // Ensure the new position is within bounds
-            if (newX < 0 || newY < 0 || newX >= (int)map.size() || newY >= (int)map[0].size())
+            if (newX < 0 || newY < 0 || newX >= (int)gameMap.size() || newY >= (int)gameMap[0].size())
             {
                 continue; // Skip invalid positions
             }
 
             // Get the corresponding letter at the new position
-            correspondingLetter = map[newX][newY];
+            correspondingLetter = gameMap[newX][newY];
 
             // Check if the corresponding letter is valid (e.g., '.' or 'D')
             if (correspondingLetter == '.' || correspondingLetter == 'D')
             {
-                setPos(newX, newY);
+                setPosition(newX, newY);
                 action_count++;
                 return; // Exit the function after finding a valid movement
             }
@@ -136,6 +183,25 @@ public:
 
         // If no valid movement was found
         std::cout << "No valid movements available." << std::endl;
+    }
+
+    void displaySingleMetric()
+    {
+        int current_value = 10;
+        int percentage = current_value/100;
+        int barWidth = 50; // Width of the progress bar
+        int progress = static_cast<int>((percentage / 100) * barWidth); // Calculate progress in terms of bar width
+        std::string current_metric = "Happiness";
+        // Print the visual progress bar
+        std::cout << current_metric << "[";
+        for (int i = 0; i < barWidth; ++i) {
+            if (i < progress) {
+                std::cout << "#";  // Fill the progress part with '#'
+            } else {
+                std::cout << " ";  // Fill the remaining part with spaces
+            }
+        }
+        std::cout << "] " << std::fixed << std::setprecision(2) << percentage << "%" << std::endl;
     }
 
     int randIntRange(int min, int max)
